@@ -29,6 +29,9 @@
 			"recommended": true,
 			"security": {
 				"noDangerouslySetInnerHtml": "off"
+			},
+			"a11y": {
+				"useSemanticElements": "off"
 			}
 		}
 	},

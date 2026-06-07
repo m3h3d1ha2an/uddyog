@@ -9,86 +9,144 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../app/__root'
-import { Route as PageRouteImport } from './../app/page'
-import { Route as AuthSignupRouteImport } from './../app/auth/signup'
-import { Route as AuthSigninRouteImport } from './../app/auth/signin'
+import { Route as privateLayoutRouteImport } from './../app/(private)/layout'
+import { Route as privatePageRouteImport } from './../app/(private)/page'
+import { Route as publicAuthLayoutRouteImport } from './../app/(public)/auth/layout'
+import { Route as publicAuthSignupRouteImport } from './../app/(public)/auth/signup'
+import { Route as publicAuthSigninRouteImport } from './../app/(public)/auth/signin'
 
-const PageRoute = PageRouteImport.update({
+const privateLayoutRoute = privateLayoutRouteImport.update({
+  id: '/(private)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const privatePageRoute = privatePageRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => privateLayoutRoute,
+} as any)
+const publicAuthLayoutRoute = publicAuthLayoutRouteImport.update({
+  id: '/(public)/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/auth/signup',
-  path: '/auth/signup',
-  getParentRoute: () => rootRouteImport,
+const publicAuthSignupRoute = publicAuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => publicAuthLayoutRoute,
 } as any)
-const AuthSigninRoute = AuthSigninRouteImport.update({
-  id: '/auth/signin',
-  path: '/auth/signin',
-  getParentRoute: () => rootRouteImport,
+const publicAuthSigninRoute = publicAuthSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => publicAuthLayoutRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PageRoute
-  '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
+  '/auth': typeof publicAuthLayoutRouteWithChildren
+  '/': typeof privatePageRoute
+  '/auth/signin': typeof publicAuthSigninRoute
+  '/auth/signup': typeof publicAuthSignupRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PageRoute
-  '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
+  '/auth': typeof publicAuthLayoutRouteWithChildren
+  '/': typeof privatePageRoute
+  '/auth/signin': typeof publicAuthSigninRoute
+  '/auth/signup': typeof publicAuthSignupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof PageRoute
-  '/auth/signin': typeof AuthSigninRoute
-  '/auth/signup': typeof AuthSignupRoute
+  '/(private)': typeof privateLayoutRouteWithChildren
+  '/(public)/auth': typeof publicAuthLayoutRouteWithChildren
+  '/(private)/': typeof privatePageRoute
+  '/(public)/auth/signin': typeof publicAuthSigninRoute
+  '/(public)/auth/signup': typeof publicAuthSignupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/signin' | '/auth/signup'
+  fullPaths: '/auth' | '/' | '/auth/signin' | '/auth/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/signin' | '/auth/signup'
-  id: '__root__' | '/' | '/auth/signin' | '/auth/signup'
+  to: '/auth' | '/' | '/auth/signin' | '/auth/signup'
+  id:
+    | '__root__'
+    | '/(private)'
+    | '/(public)/auth'
+    | '/(private)/'
+    | '/(public)/auth/signin'
+    | '/(public)/auth/signup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PageRoute: typeof PageRoute
-  AuthSigninRoute: typeof AuthSigninRoute
-  AuthSignupRoute: typeof AuthSignupRoute
+  privateLayoutRoute: typeof privateLayoutRouteWithChildren
+  publicAuthLayoutRoute: typeof publicAuthLayoutRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(private)': {
+      id: '/(private)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof privateLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(private)/': {
+      id: '/(private)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof PageRouteImport
+      preLoaderRoute: typeof privatePageRouteImport
+      parentRoute: typeof privateLayoutRoute
+    }
+    '/(public)/auth': {
+      id: '/(public)/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof publicAuthLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
+    '/(public)/auth/signup': {
+      id: '/(public)/auth/signup'
+      path: '/signup'
       fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof publicAuthSignupRouteImport
+      parentRoute: typeof publicAuthLayoutRoute
     }
-    '/auth/signin': {
-      id: '/auth/signin'
-      path: '/auth/signin'
+    '/(public)/auth/signin': {
+      id: '/(public)/auth/signin'
+      path: '/signin'
       fullPath: '/auth/signin'
-      preLoaderRoute: typeof AuthSigninRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof publicAuthSigninRouteImport
+      parentRoute: typeof publicAuthLayoutRoute
     }
   }
 }
 
+interface privateLayoutRouteChildren {
+  privatePageRoute: typeof privatePageRoute
+}
+
+const privateLayoutRouteChildren: privateLayoutRouteChildren = {
+  privatePageRoute: privatePageRoute,
+}
+
+const privateLayoutRouteWithChildren = privateLayoutRoute._addFileChildren(
+  privateLayoutRouteChildren,
+)
+
+interface publicAuthLayoutRouteChildren {
+  publicAuthSigninRoute: typeof publicAuthSigninRoute
+  publicAuthSignupRoute: typeof publicAuthSignupRoute
+}
+
+const publicAuthLayoutRouteChildren: publicAuthLayoutRouteChildren = {
+  publicAuthSigninRoute: publicAuthSigninRoute,
+  publicAuthSignupRoute: publicAuthSignupRoute,
+}
+
+const publicAuthLayoutRouteWithChildren =
+  publicAuthLayoutRoute._addFileChildren(publicAuthLayoutRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  PageRoute: PageRoute,
-  AuthSigninRoute: AuthSigninRoute,
-  AuthSignupRoute: AuthSignupRoute,
+  privateLayoutRoute: privateLayoutRouteWithChildren,
+  publicAuthLayoutRoute: publicAuthLayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
