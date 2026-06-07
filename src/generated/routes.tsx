@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './../app/__root'
 import { Route as privateLayoutRouteImport } from './../app/(private)/layout'
 import { Route as privatePageRouteImport } from './../app/(private)/page'
 import { Route as publicAuthLayoutRouteImport } from './../app/(public)/auth/layout'
+import { Route as ApiAuthSplatRouteImport } from './../app/api/auth/$'
 import { Route as publicAuthSignupRouteImport } from './../app/(public)/auth/signup'
 import { Route as publicAuthSigninRouteImport } from './../app/(public)/auth/signin'
 
@@ -27,6 +28,11 @@ const privatePageRoute = privatePageRouteImport.update({
 const publicAuthLayoutRoute = publicAuthLayoutRouteImport.update({
   id: '/(public)/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const publicAuthSignupRoute = publicAuthSignupRouteImport.update({
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof privatePageRoute
   '/auth/signin': typeof publicAuthSigninRoute
   '/auth/signup': typeof publicAuthSignupRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof publicAuthLayoutRouteWithChildren
   '/': typeof privatePageRoute
   '/auth/signin': typeof publicAuthSigninRoute
   '/auth/signup': typeof publicAuthSignupRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/(private)/': typeof privatePageRoute
   '/(public)/auth/signin': typeof publicAuthSigninRoute
   '/(public)/auth/signup': typeof publicAuthSignupRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth' | '/' | '/auth/signin' | '/auth/signup'
+  fullPaths: '/auth' | '/' | '/auth/signin' | '/auth/signup' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/' | '/auth/signin' | '/auth/signup'
+  to: '/auth' | '/' | '/auth/signin' | '/auth/signup' | '/api/auth/$'
   id:
     | '__root__'
     | '/(private)'
@@ -72,11 +81,13 @@ export interface FileRouteTypes {
     | '/(private)/'
     | '/(public)/auth/signin'
     | '/(public)/auth/signup'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   privateLayoutRoute: typeof privateLayoutRouteWithChildren
   publicAuthLayoutRoute: typeof publicAuthLayoutRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -100,6 +111,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof publicAuthLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(public)/auth/signup': {
@@ -147,6 +165,7 @@ const publicAuthLayoutRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   privateLayoutRoute: privateLayoutRouteWithChildren,
   publicAuthLayoutRoute: publicAuthLayoutRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
