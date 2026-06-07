@@ -1,16 +1,38 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { AuthCard } from "#/components/auth-card";
 import { Button } from "#/components/ui/button";
-import { Field, FieldGroup } from "#/components/ui/field";
+import { FieldGroup } from "#/components/ui/field";
 import { Spinner } from "#/components/ui/spinner";
+import { signInDefaults, signInSchema } from "#/database/validator";
 import { useAppForm } from "#/hooks/use-form-hooks";
+import { authClient } from "#/lib/better-auth/client";
 
 export const Route = createFileRoute("/(public)/auth/signin")({
 	component: SignInPage,
 });
 
 function SignInPage() {
-	const form = useAppForm({});
+	const form = useAppForm({
+		defaultValues: signInDefaults,
+		validators: { onSubmit: signInSchema },
+		onSubmit: async ({ value }) => {
+			await authClient.signIn.email(
+				{
+					email: value.email,
+					password: value.password,
+				},
+				{
+					onSuccess: () => {
+						redirect({ to: "/" });
+					},
+					onError: (ctx) => {
+						toast.error(ctx.error.message ?? "Something went wrong");
+					},
+				},
+			);
+		},
+	});
 	return (
 		<AuthCard
 			title="Welcome back!"
@@ -30,7 +52,7 @@ function SignInPage() {
 					<form.AppField name="password">
 						{(field) => <field.Input label="Password" type="password" />}
 					</form.AppField>
-					<Field orientation="horizontal">
+					{/*<Field orientation="horizontal">
 						<form.AppField name="rememberMe">
 							{(field) => <field.Checkbox label="Remember me" horizontal />}
 						</form.AppField>
@@ -39,7 +61,8 @@ function SignInPage() {
 								Forgot password?
 							</Button>
 						</Link>
-					</Field>
+					</Field>*/}
+					<Button>Guest Signin</Button>
 					<form.Subscribe
 						selector={(state) => [state.canSubmit, state.isSubmitting]}
 					>
