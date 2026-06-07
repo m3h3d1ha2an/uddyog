@@ -9,10 +9,16 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
-    "format": "biome format --write",
     "lint": "biome lint --write",
-    "check": "biome check --write",
+		"fmt": "biome format --write",
+		"fix": "biome check --write",
+		"tsc": "tsc --noEmit",
+		"check": "bun run fix && bun run tsc",
+		"db:push": "drizzle-kit push",
+		"db:gen": "drizzle-kit generate",
+		"db:mig": "drizzle-kit migrate",
+		"db:up": "docker compose up -d",
+		"db:down": "docker compose down",
     "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
@@ -22,7 +28,10 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "1.168.25",
     "@tanstack/router-plugin": "^1.168.18",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.17.0",
+    "postgres": "^3.4.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.18"
@@ -36,6 +45,7 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
+    "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "wrangler": "^4.70.0"
