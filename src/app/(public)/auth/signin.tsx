@@ -4,7 +4,7 @@ import { AuthCard } from "#/components/auth-card";
 import { Button } from "#/components/ui/button";
 import { FieldGroup } from "#/components/ui/field";
 import { Spinner } from "#/components/ui/spinner";
-import { signInSchema } from "#/database/validator";
+import { type SignInSchema, signInSchema } from "#/database/validator";
 import { useAppForm } from "#/hooks/use-form-hooks";
 import { authClient } from "#/lib/better-auth/client";
 
@@ -14,28 +14,41 @@ export const Route = createFileRoute("/(public)/auth/signin")({
 
 function SignInPage() {
 	const router = useRouter();
+	const handleSignIn = async ({ value }: { value: SignInSchema }) => {
+		await authClient.signIn.email(
+			{
+				email: value.email,
+				password: value.password,
+			},
+			{
+				onSuccess: () => {
+					router.navigate({ to: "/" });
+				},
+				onError: (ctx) => {
+					toast.error(ctx.error.message ?? "Something went wrong");
+				},
+			},
+		);
+	};
+	const handleAnonymous = async () => {
+		await authClient.signIn.anonymous({
+			fetchOptions: {
+				onSuccess: () => {
+					router.navigate({ to: "/" });
+				},
+				onError: (ctx) => {
+					toast.error(ctx.error.message ?? "Something went wrong");
+				},
+			},
+		});
+	};
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
 			password: "",
 		},
 		validators: { onSubmit: signInSchema },
-		onSubmit: async ({ value }) => {
-			await authClient.signIn.email(
-				{
-					email: value.email,
-					password: value.password,
-				},
-				{
-					onSuccess: () => {
-						router.navigate({ to: "/" });
-					},
-					onError: (ctx) => {
-						toast.error(ctx.error.message ?? "Something went wrong");
-					},
-				},
-			);
-		},
+		onSubmit: handleSignIn,
 	});
 	return (
 		<AuthCard
@@ -70,19 +83,7 @@ function SignInPage() {
 						className="text-base"
 						variant="outline"
 						type="button"
-						onClick={async () => {
-							await authClient.signIn.anonymous(
-								{},
-								{
-									onSuccess: () => {
-										router.navigate({ to: "/" });
-									},
-									onError: (ctx) => {
-										toast.error(ctx.error.message ?? "Something went wrong");
-									},
-								},
-							);
-						}}
+						onClick={handleAnonymous}
 					>
 						Continue as Guest
 					</Button>
