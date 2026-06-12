@@ -1,6 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { ThemeToggle } from "#/components/theme-toggle";
 import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/better-auth/client";
 
@@ -20,7 +19,6 @@ const Dashboard = () => {
 	};
 	return (
 		<div className="flex justify-center items-center gap-2">
-			<ThemeToggle />
 			<Button onClick={handleSignout}>Logout</Button>
 		</div>
 	);
