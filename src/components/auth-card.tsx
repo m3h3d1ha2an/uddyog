@@ -14,7 +14,7 @@ type AuthCardProps = {
 
 export const AuthCard = ({ title, description, children }: AuthCardProps) => {
 	return (
-		<Card className="relative w-full max-w-sm overflow-hidden">
+		<Card className="relative w-full max-w-sm overflow-hidden shadow">
 			<CardHeader className="text-center">
 				<img
 					alt="Logo"

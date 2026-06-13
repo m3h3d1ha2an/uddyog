@@ -5,7 +5,7 @@ import { FieldGroup } from "#/components/ui/field";
 import { Spinner } from "#/components/ui/spinner";
 import { useAppForm } from "#/hooks/use-form-hooks";
 
-export const Route = createFileRoute("/(public)/auth/signup")({
+export const Route = createFileRoute("/(auth)/signup")({
 	component: SignUpPage,
 });
 
@@ -45,7 +45,7 @@ function SignUpPage() {
 					</form.Subscribe>
 					<div className="flex items-center justify-center text-sm">
 						Already have an account?
-						<Link to="/auth/signin">
+						<Link to="/signin">
 							<Button type="button" variant="link" className="text-sm">
 								Signin
 							</Button>

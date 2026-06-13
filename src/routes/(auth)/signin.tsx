@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { AuthCard } from "#/components/auth-card";
 import { Button } from "#/components/ui/button";
@@ -8,12 +9,9 @@ import { type SignInSchema, signInSchema } from "#/database/validator";
 import { useAppForm } from "#/hooks/use-form-hooks";
 import { authClient } from "#/lib/better-auth/client";
 
-export const Route = createFileRoute("/(public)/auth/signin")({
-	component: SignInPage,
-});
-
-function SignInPage() {
+const SignInPage = () => {
 	const router = useRouter();
+	const [isGuestLoading, setIsGuestLoading] = useState(false);
 	const handleSignIn = async ({ value }: { value: SignInSchema }) => {
 		await authClient.signIn.email(
 			{
@@ -33,6 +31,12 @@ function SignInPage() {
 	const handleAnonymous = async () => {
 		await authClient.signIn.anonymous({
 			fetchOptions: {
+				onRequest: () => {
+					setIsGuestLoading(true);
+				},
+				onResponse: () => {
+					setIsGuestLoading(false);
+				},
 				onSuccess: () => {
 					router.navigate({ to: "/" });
 				},
@@ -84,13 +88,15 @@ function SignInPage() {
 						variant="outline"
 						type="button"
 						onClick={handleAnonymous}
+						disabled={isGuestLoading}
 					>
+						{isGuestLoading && <Spinner />}
 						Continue as Guest
 					</Button>
 
 					<div className="flex items-center justify-center text-sm">
 						Don't have an account?
-						<Link to="/auth/signup">
+						<Link to="/signup">
 							<Button type="button" variant="link" className="text-sm">
 								Sign Up
 							</Button>
@@ -100,4 +106,8 @@ function SignInPage() {
 			</form>
 		</AuthCard>
 	);
-}
+};
+
+export const Route = createFileRoute("/(auth)/signin")({
+	component: SignInPage,
+});

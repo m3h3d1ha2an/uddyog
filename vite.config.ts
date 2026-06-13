@@ -13,7 +13,6 @@ const config = defineConfig({
 		tanstackStart({
 			srcDirectory: "src",
 			router: {
-				routesDirectory: "app",
 				indexToken: "page",
 				routeToken: "layout",
 				generatedRouteTree: "generated/routes.tsx",
